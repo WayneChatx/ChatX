@@ -6,13 +6,15 @@ from xai_grok_sdk import XAI
 import geoip2.database
 import pytz
 from datetime import datetime
+import os
 
 app = Flask(__name__, static_url_path='', static_folder='static')
 CORS(app)
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-XAI_API_KEY = 'xai-S2TOB7UdKoCQtuWTPp1UlJw3qrE55RSNjMYCpvasF44bio52Aee89nJQnbcCkPLCkYdaNob6VjCkFsQK'
+# Use environment variable for API key, with a placeholder default
+XAI_API_KEY = os.getenv('XAI_API_KEY', 'default_api_key_if_not_set')
 xai_client = XAI(api_key=XAI_API_KEY, model="grok-2-1212")
 conversation_history = {}
 
@@ -52,15 +54,16 @@ def chat():
 
         # Get user's local time and country (this is approximate since we're not using the exact time zone)
         try:
-            response = READER.city(user_ip)
-            timezone = response.location.time_zone
-            local_time = datetime.now(pytz.timezone(timezone))
-            country = response.country.name
-            conversation_history[session_id]['user_info'] = {
-                'ip': user_ip,
-                'time': local_time,
-                'country': country
-            }
+            with geoip2.database.Reader('GeoLite2-City.mmdb') as READER:
+                response = READER.city(user_ip)
+                timezone = response.location.time_zone
+                local_time = datetime.now(pytz.timezone(timezone))
+                country = response.country.name
+                conversation_history[session_id]['user_info'] = {
+                    'ip': user_ip,
+                    'time': local_time,
+                    'country': country
+                }
         except Exception as e:
             logger.error(f"Error determining user info: {e}")
             conversation_history[session_id]['user_info'] = {
