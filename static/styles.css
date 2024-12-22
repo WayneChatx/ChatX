@@ -1,0 +1,109 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #222;
+    color: #d1d5db;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#chat-container {
+    width: 80%;
+    max-width: 600px;
+    background: #333;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.chat-window {
+    height: 720px;  /* 1.8 times larger than 400px */
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.chat-window p {
+    margin: 10px 0;
+    padding: 10px 15px;
+    border-radius: 20px;
+    max-width: 80%;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.chat-window p:nth-child(odd) {
+    background: #4a5568;
+    color: #e2e8f0;
+    align-self: flex-start;
+}
+
+.chat-window p:nth-child(even) {
+    background: #4a5568;
+    color: #e2e8f0;
+    align-self: flex-end;
+}
+
+.input-area {
+    display: flex;
+    padding: 10px;
+    background: #4a5568;
+}
+
+#message {
+    width: 80%;  /* 70% shorter, so 30% of original width */
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    margin-right: 10px;
+    background: #2d3748;
+    color: #e2e8f0;
+}
+
+button {
+    background-color: #6366f1;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 20px;
+}
+
+button:hover {
+    background-color: #4f46e5;
+}
+
+/* Responsive design for mobile */
+@media (max-width: 600px) {
+    #chat-container {
+        width: 100%;
+        border-radius: 0;
+    }
+
+    .chat-window {
+        height: calc(100vh - 120px); /* Best fit for mobile, leave space for input */
+    }
+
+    #message {
+        width: 60%;  /* Keep the same width for mobile to maintain consistency */
+        font-size: 14px;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 8px 15px;
+    }
+}
+
+/* Ensure the input area stays within view for very short screens */
+@media (max-height: 600px) {
+    .chat-window {
+        height: calc(100vh - 150px);
+    }
+}
