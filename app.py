@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# app.py
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import logging
@@ -13,7 +13,6 @@ CORS(app)
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-# Use environment variable for API key, with a placeholder default
 XAI_API_KEY = os.getenv('XAI_API_KEY', 'default_api_key_if_not_set')
 xai_client = XAI(api_key=XAI_API_KEY, model="grok-2-1212")
 conversation_history = {}
@@ -49,10 +48,8 @@ def chat():
         }
 
     if not conversation_history[session_id]['user_info']:
-        # Get user's IP address
         user_ip = request.remote_addr
 
-        # Get user's local time and country (this is approximate since we're not using the exact time zone)
         try:
             with geoip2.database.Reader('GeoLite2-City.mmdb') as READER:
                 response = READER.city(user_ip)
