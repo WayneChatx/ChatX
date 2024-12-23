@@ -61,6 +61,13 @@ def chat():
                     'time': local_time,
                     'country': country
                 }
+        except geoip2.errors.AddressNotFoundError:
+            logger.error(f"IP Address {user_ip} not found in GeoIP database")
+            conversation_history[session_id]['user_info'] = {
+                'ip': user_ip,
+                'time': datetime.now(pytz.utc),
+                'country': "Unknown"
+            }
         except Exception as e:
             logger.error(f"Error determining user info: {e}")
             conversation_history[session_id]['user_info'] = {
@@ -73,11 +80,14 @@ def chat():
     try:
         system_message = f"You are Wayne A.I., a sample chatbot by Wayne Sung in Taiwan. The user is from {conversation_history[session_id]['user_info']['country']} and the local time there is {conversation_history[session_id]['user_info']['time'].strftime('%Y-%m-%d %H:%M:%S %Z')}. Be caring and humorous. Use a Christian tone only when the user explicitly seeks prayer, comfort, or companionship. Otherwise, maintain a neutral, friendly tone."
         
+        messages = [
+            {"role": "system", "content": system_message},
+            *conversation_history[session_id]['history']
+        ]
+        logger.debug(f"API Call Payload: {messages}")  # Log the payload for debugging
+        
         response = xai_client.invoke(
-            messages=[
-                {"role": "system", "content": system_message},
-                *conversation_history[session_id]['history']
-            ]
+            messages=messages
         )
         ai_response = response.choices[0].message.content if response.choices else "No response from AI"
         conversation_history[session_id]['history'].append({"role": "assistant", "content": ai_response})
